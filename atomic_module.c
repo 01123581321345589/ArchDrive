@@ -3,15 +3,21 @@
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/kthread.h>
+#include <include/linux/types.h>
+#include <include/asm-generic/atomic.h>
 
-volatile int race = 0;
+volatile atomic_t race;
+atomic_set(&race, 0)；
+
 #define iters 1000000
 int threadfn(void *data){
+    unsigned int cid = smp_processor_id();
     int i;
-    //printk(KERN_DEBUG "cpu:%d\n", smp_processor_id());
+    printk(KERN_DEBUG "loop starts on cpu %d\n", cid);
     for(i=0;i<iters;i++){
-        race++;
+        atomic_add(1, &race);
     }
+    printk(KERN_DEBUG "loop ends on cpu %d\n", cid);
     return 0;
 }
 
@@ -30,7 +36,7 @@ static int simple_init (void) {
 
 /* exit function - logs that the module is being removed */
 static void simple_exit (void) {
-    printk(KERN_NOTICE "race:%d\n", race);
+    printk(KERN_NOTICE "race:%d\n", atomic_read(&race));
     printk(KERN_INFO "module unloaded\n");
 }
 
