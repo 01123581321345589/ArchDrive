@@ -6,13 +6,13 @@
 
 volatile int race = 0;
 #define iters 1000000
-int threadfn(){
+int threadfn(void *data){
     int i;
     printk(KERN_ALERT "cpu:%d\n", smp_processor_id());
     for(i=0;i<iters;i++){
         race++;
     }
-    do_exit();
+    //do_exit();
     return 0;
 }
 /* init function - logs that initialization happened, returns success */
@@ -22,7 +22,7 @@ static int simple_init (void) {
     struct task_struct* thread;
     for(k=0;k<4;k++){
         thread = kthread_create(threadfn, NULL, "thread %d", k);
-        kthread_bind(struct task_struct* thread, k);
+        kthread_bind(thread, k);
         wake_up_process(thread);
     }
     return 0;
