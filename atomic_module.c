@@ -6,13 +6,12 @@
 #include <linux/types.h>
 #include <asm-generic/atomic.h>
 
-volatile atomic_t race;
+atomic_t race;
 atomic_set(&race, 0);
 
 #define iters 1000000
 int threadfn(void *data){
-    unsigned int cid = smp_processor_id();
-    int i;
+    int i, cid = smp_processor_id();
     printk(KERN_DEBUG "loop starts on cpu %d\n", cid);
     for(i=0;i<iters;i++){
         atomic_add(1, &race);
