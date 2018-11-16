@@ -3,8 +3,8 @@
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/kthread.h>
-#include <include/linux/types.h>
-#include <include/asm-generic/atomic.h>
+#include <linux/types.h>
+#include <asm-generic/atomic.h>
 
 volatile atomic_t race;
 atomic_set(&race, 0)；
