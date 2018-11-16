@@ -8,7 +8,7 @@ volatile int race = 0;
 #define iters 1000000
 int threadfn(void *data){
     int i;
-    printk(KERN_ALERT "cpu:%d\n", smp_processor_id());
+    //printk(KERN_ALERT "cpu:%d\n", smp_processor_id());
     for(i=0;i<iters;i++){
         race++;
     }
@@ -30,6 +30,7 @@ static int simple_init (void) {
 
 /* exit function - logs that the module is being removed */
 static void simple_exit (void) {
+    printk(KERN_ALERT "race:%d\n", race);
     printk(KERN_ALERT "module unloaded\n");
 }
 
