@@ -7,8 +7,9 @@
 volatile int race = 0;
 #define iters 1000000
 int threadfn(){
+    int i;
     printk(KERN_ALERT "cpu:%d\n", smp_processor_id());
-    for( i=0; i<iters; i++){
+    for(i=0;i<iters;i++){
         race++;
     }
     do_exit();
