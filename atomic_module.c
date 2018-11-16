@@ -7,7 +7,7 @@
 #include <asm-generic/atomic.h>
 
 volatile atomic_t race;
-atomic_set(&race, 0)；
+atomic_set(&race, 0);
 
 #define iters 1000000
 int threadfn(void *data){
