@@ -4,19 +4,19 @@
 #include <linux/sched.h>
 #include <linux/kthread.h>
 #include <linux/types.h>
-#include <asm-generic/atomic.h>
 
 #define iters 1000000
 
+int a = 0, b = 1;
 atomic_t race;
-atomic_set(&race, 0);
+atomic_set(&race, a);
 
 int threadfn(void *data){
     int i;
     int unsigned cid = smp_processor_id();
     printk(KERN_DEBUG "loop starts on cpu %d\n", cid);
     for(i=0;i<iters;i++){
-        atomic_add(1, &race);
+        atomic_add(b, race);
     }
     printk(KERN_DEBUG "loop ends on cpu %d\n", cid);
     return 0;
@@ -37,7 +37,7 @@ static int simple_init (void) {
 
 /* exit function - logs that the module is being removed */
 static void simple_exit (void) {
-    printk(KERN_NOTICE "race:%d\n", atomic_read(&race));
+    printk(KERN_NOTICE "race:%d\n", atomic_read(race));
     printk(KERN_INFO "module unloaded\n");
 }
 
