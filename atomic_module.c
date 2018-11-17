@@ -6,12 +6,14 @@
 #include <linux/types.h>
 #include <asm-generic/atomic.h>
 
+#define iters 1000000
+
 atomic_t race;
 atomic_set(&race, 0);
 
-#define iters 1000000
 int threadfn(void *data){
-    int i, cid = smp_processor_id();
+    int i;
+    int unsigned cid = smp_processor_id();
     printk(KERN_DEBUG "loop starts on cpu %d\n", cid);
     for(i=0;i<iters;i++){
         atomic_add(1, &race);
@@ -22,9 +24,9 @@ int threadfn(void *data){
 
 /* init function - logs that initialization happened, returns success */
 static int simple_init (void) {
-    printk(KERN_INFO "module initialized\n");
+    int unsigned k;
     struct task_struct* thread;
-    int k;
+    printk(KERN_INFO "module initialized\n");
     for(k=0;k<4;k++){
         thread = kthread_create(threadfn, NULL, "thread %d", k);
         kthread_bind(thread, k);
