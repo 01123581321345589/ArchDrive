@@ -4,7 +4,6 @@
 #include <linux/sched.h>
 #include <linux/kthread.h>
 #include <linux/types.h>
-#include <asm-generic/atomic.h>
 
 #define iters 1000000
 
@@ -41,7 +40,6 @@ static void simple_exit (void) {
     printk(KERN_INFO "module unloaded\n");
 }
 
-//atomic_set(&race, 0);
 module_init (simple_init);
 module_exit (simple_exit);
 
