@@ -18,8 +18,8 @@ int threadfn(void *data){
 /* init function - logs that initialization happened, returns success */
 static int simple_init (void) {
     printk(KERN_INFO "module initialized\n");
-    unsigned int k;
     struct task_struct* thread;
+    int k;
     for(k=0;k<4;k++){
         thread = kthread_create(threadfn, NULL, "thread %d", k);
         kthread_bind(thread, k);
