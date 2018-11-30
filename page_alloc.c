@@ -9,8 +9,13 @@
 unsigned int objnum = 2000;
 module_param(objnum, uint, 0);
 
+struct type {
+    unsigned int arr[8];
+};
+
 int threadfn(void *data){
-    printk(KERN_INFO "number of objects: %u\n", (unsigned int)(*data));
+    printk(KERN_INFO "number of objects: %u\n", *(unsigned int *)data);
+    printk(KERN_INFO "size of the structure: %d\n", sizeof(struct type));
     return 0;
 }
 
