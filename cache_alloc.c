@@ -22,7 +22,7 @@ int threadfn(void *data){
     struct timeval t0, t1;
     void *p;
     int i;
-    printk(KERN_INFO "allocating memory for %u objects of size %zd\n", objnum, size);
+    printk(KERN_INFO "allocating cache for %u objects\n", objnum);
     do_gettimeofday(&t0);
     for(i=0;i<objnum;i++){
         p = kmem_cache_alloc(cache, GFP_KERNEL);
