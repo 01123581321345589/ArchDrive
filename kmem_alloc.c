@@ -8,6 +8,7 @@
 #include <linux/gfp.h>
 #include <linux/log2.h>
 #include <linux/time.h>
+#include <linux/slab.h>
 
 unsigned int objnum = 2000;
 module_param(objnum, uint, 0);
