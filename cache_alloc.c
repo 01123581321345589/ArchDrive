@@ -12,22 +12,21 @@
 unsigned int objnum = 2000;
 module_param(objnum, uint, 0);
 
+struct kmem_cache *cache;
 struct type {
     unsigned int arr[8];
 };
 
 int threadfn(void *data){
     struct timeval t0, t1;
-    struct page * p;
-    int order;
-    size_t size = sizeof(struct type);
-    printk(KERN_INFO "number of objects: %u\n", *(unsigned int *)data);
-    printk(KERN_INFO "size of the structure: %zd\n", size);
-    order = order_base_2(objnum)-order_base_2(div_u64(PAGE_SIZE, size));
-    printk(KERN_INFO "allocating 2^%d pages\n", order);
+    void *p;
+    int i;
+    printk(KERN_INFO "allocating memory for %u objects of size %zd\n", objnum, size);
     do_gettimeofday(&t0);
-    p = alloc_pages(GFP_KERNEL, order);
-    __free_pages(p, order);
+    for(i=0;i<objnum;i++){
+        p = kmem_cache_alloc(cache, GFP_KERNEL);
+        kmem_cache_free(cache, p);
+    }
     do_gettimeofday(&t1);
     printk(KERN_INFO "takes %ld microseconds\n", t1.tv_usec-t0.tv_usec);
     return 0;
@@ -37,7 +36,8 @@ int threadfn(void *data){
 static int simple_init (void) {
     struct task_struct* thread;
     printk(KERN_INFO "\e[36mmodule initialized\e[0m\n");
-    thread = kthread_create(threadfn, &objnum, "new thread");
+    cache = kmem_cache_create("cache", sizeof(struct type), 0, 0, NULL);
+    thread = kthread_create(threadfn, NULL, "new thread");
     kthread_bind(thread, 0);
     wake_up_process(thread);
     return 0;
@@ -45,6 +45,7 @@ static int simple_init (void) {
 
 /* exit function - logs that the module is being removed */
 static void simple_exit (void) {
+    kmem_cache_destroy(cache);
     printk(KERN_INFO "\e[36mmodule unloaded\e[0m\n");
 }
 
