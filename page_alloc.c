@@ -2,9 +2,12 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
+#include <linux/jiffies.h>
 #include <linux/kthread.h>
 #include <linux/moduleparam.h>
-
+#include <linux/gfp.h>
+#include <linux/log2.h>
+#include <linux/math64.h>
 
 unsigned int objnum = 2000;
 module_param(objnum, uint, 0);
@@ -14,8 +17,14 @@ struct type {
 };
 
 int threadfn(void *data){
+    unsigned long tick0, tick1;
     printk(KERN_INFO "number of objects: %u\n", *(unsigned int *)data);
-    printk(KERN_INFO "size of the structure: %d\n", sizeof(struct type));
+    printk(KERN_INFO "size of the structure: %zd\n", sizeof(struct type));
+    printk(KERN_INFO "%ld/n", order_base_2(objnum)-order_base_2(div_u64(PAGE_SIZE/sizeof(struct type))))
+    tick0 = jiffies;
+    //alloc_pages(GFP_KERNEL, order_base_2(objnum)-order_base_2(PAGE_SIZE/sizeof(struct type)));
+    
+    tick1 = jiffies;
     return 0;
 }
 
