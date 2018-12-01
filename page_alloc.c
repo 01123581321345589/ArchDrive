@@ -7,7 +7,6 @@
 #include <linux/moduleparam.h>
 #include <linux/gfp.h>
 #include <linux/log2.h>
-#include <linux/math64.h>
 
 unsigned int objnum = 2000;
 module_param(objnum, uint, 0);
@@ -18,13 +17,17 @@ struct type {
 
 int threadfn(void *data){
     unsigned long tick0, tick1;
+    struct page * p;
+    int order;
     printk(KERN_INFO "number of objects: %u\n", *(unsigned int *)data);
     printk(KERN_INFO "size of the structure: %zd\n", sizeof(struct type));
-    printk(KERN_INFO "%ld/n", order_base_2(objnum)-order_base_2(div_u64(PAGE_SIZE/sizeof(struct type))))
+    order = order_base_2(objnum)-order_base_2(div_u64(PAGE_SIZE, sizeof(struct type)));
+    printk(KERN_INFO "allocating 2^%d pages\n", order);
     tick0 = jiffies;
-    //alloc_pages(GFP_KERNEL, order_base_2(objnum)-order_base_2(PAGE_SIZE/sizeof(struct type)));
-    
+    p = alloc_pages(GFP_KERNEL, order);
+    __free_pages(p, order);
     tick1 = jiffies;
+    printk(KERN_INFO "takes %ld microseconds\n", (tick1-tick0)*1000000/HZ);
     return 0;
 }
 
